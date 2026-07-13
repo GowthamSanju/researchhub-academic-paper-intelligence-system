@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment variables
+.env
+.env.local
+
+# Stored images directory (extracted images from PDFs)
+stored_images/
+
+# Data
+# Note: All files are now stored in temporary directories and auto-cleaned
+# No persistent data folder should be created
+data/
+
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
