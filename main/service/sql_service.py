@@ -25,19 +25,19 @@ def get_db_engine():
 def get_sql_database(engine=None, include_tables=None):
     """
     Return a LlamaIndex SQLDatabase wrapper over the Postgres engine.
-    
+
     By default it exposes the core business tables used in this demo.
     """
     if engine is None:
         engine = get_db_engine()
     if include_tables is None:
         include_tables = [
-            "tiers",
-            "discounts",
-            "taxes",
-            "customers",
-            "subscriptions",
-            "revenue",
+            "papers",
+            "authors",
+            "paper_authors",
+            "keywords",
+            "paper_keywords",
+            "citations",
         ]
     return SQLDatabase(engine, include_tables=include_tables)
 

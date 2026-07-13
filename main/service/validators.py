@@ -1,5 +1,6 @@
 """Guardrails validators for input/output safety."""
 import logging
+from datetime import datetime
 from typing import Tuple, List, Dict, Any
 
 logger = logging.getLogger(__name__)
@@ -313,7 +314,7 @@ class GuardrailsValidator:
         output_valid, sanitized_output, output_metadata = self.validate_output(response)
         
         report = {
-            "timestamp": __import__("datetime").datetime.now().isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "input": {
                 "valid": input_valid,
                 "error": input_error,

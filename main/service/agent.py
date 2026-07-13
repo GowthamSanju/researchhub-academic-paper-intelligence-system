@@ -8,7 +8,7 @@ from llama_index.core import Settings
 from llama_index.llms.azure_openai import AzureOpenAI
 from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
 from main.service.tools import get_sql_tool, get_vector_tool
-from .mcp_client import AcademicMCPService # Update import name here
+from .mcp_client import AcademicMCPService
 
 load_dotenv()
 
@@ -49,7 +49,8 @@ async def get_agent():
             mcp_tools = [mcp_tools]
         
         tools = [sql_tool, vector_tool, *mcp_tools]
-        logging.info(f"Creating academic coordinator workflow with {len(tools)} tools.")
+        logger = logging.getLogger(__name__)
+        logger.info(f"Creating academic coordinator workflow with {len(tools)} tools.")
 
         _agent = AgentWorkflow.from_tools_or_functions(
             tools,

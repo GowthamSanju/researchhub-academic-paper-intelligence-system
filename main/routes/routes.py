@@ -4,12 +4,10 @@ import os
 import tempfile
 import datetime
 import secrets
-from typing import List, Optional
 from pathlib import Path
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, BackgroundTasks
-from fastapi.responses import JSONResponse
 
-from ..models import UploadResponse, QueryRequest, QueryResponse, ErrorResponse
+from ..models import UploadResponse, QueryRequest, QueryResponse
 from ..service.multimodal_service import get_service, MultimodalService
 from ..evaluation.dataset import get_langfuse_client
 from ..evaluation.dataset_evaluation import (
@@ -81,13 +79,14 @@ async def upload_document(
     
     All content is added to a unified vector index.
     """
-    logger.info(f"Received document upload request: filename={file.filename}, size={file.size}")
+    filename = file.filename or "uploaded_file"
+    logger.info(f"Received document upload request: filename={filename}, size={file.size}")
     
     # Validate file type
     supported_extensions = {'.txt', '.pdf', '.md', '.docx'}
-    file_extension = Path(file.filename).suffix.lower()
+    file_extension = Path(filename).suffix.lower()
     if file_extension not in supported_extensions:
-        logger.warning(f"Invalid file type: {file.filename}")
+        logger.warning(f"Invalid file type: {filename}")
         raise HTTPException(
             status_code=400,
             detail=f"Supported file types: {', '.join(supported_extensions)}"
@@ -104,16 +103,16 @@ async def upload_document(
         
         try:
             # Process document (pass original filename for metadata)
-            logger.info(f"Processing document: {file.filename}")
-            result = service.process_document(tmp_path, original_filename=file.filename)
+            logger.info(f"Processing document: {filename}")
+            result = service.process_document(tmp_path, original_filename=filename)
             
             logger.info(f"Document processed successfully: {result}")
             
             return UploadResponse(
                 success=True,
-                message=f"Document '{file.filename}' processed successfully",
+                message=f"Document '{filename}' processed successfully",
                 document_id=result["document_id"],
-                file_path=result.get("file_path", file.filename),
+                file_path=result.get("file_path", filename),
                 nodes_created=result.get("total_nodes", 0),
                 text_nodes=result.get("text_nodes", 0),
                 table_nodes=result.get("table_nodes", 0),
@@ -126,7 +125,7 @@ async def upload_document(
                 logger.debug(f"Cleaned up temporary file: {tmp_path}")
         
     except Exception as e:
-        logger.error(f"Error processing document {file.filename}: {str(e)}", exc_info=True)
+        logger.error(f"Error processing document {filename}: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500,
             detail=f"Error processing document: {str(e)}"
@@ -190,8 +189,7 @@ async def query_agent(
             }
             for node in source_nodes
         ]
-        eval_context = "\n\n".join([chunk["text"] for chunk in full_chunks])
-        extracted_metadata = [node.get("metadata", {}) for node in source_nodes]
+        eval_context = "\n\n".join(chunk["text"] for chunk in full_chunks if chunk["text"])
 
         # ===== OUTPUT GUARDRAILS =====
         guardrails_report = {

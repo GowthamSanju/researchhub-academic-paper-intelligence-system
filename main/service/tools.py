@@ -11,7 +11,7 @@ from llama_index.core.tools import FunctionTool # <-- Import FunctionTool
 from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
 
 from .rag_service import get_rag_service
-from .sql_database import get_sql_database
+from .sql_service import get_sql_database
 
 # Configure logging
 logger = logging.getLogger(__name__)

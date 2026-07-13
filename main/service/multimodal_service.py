@@ -1,14 +1,10 @@
 """Core multi-modal service orchestrating document processing and querying."""
 import logging
-import os
 import uuid
-import shutil
-from pathlib import Path
 from typing import List, Optional, Dict, Any
 from llama_index.core import VectorStoreIndex, Document, Settings, StorageContext
 from llama_index.core.schema import BaseNode
 from llama_index.embeddings.azure_openai import AzureOpenAIEmbedding
-from llama_index.core.query_engine import RetrieverQueryEngine
 
 from .indexing import configure_llm_and_embeddings, get_file_metadata, create_vector_store
 from .document_parser import load_documents, extract_tables_from_text
@@ -18,8 +14,6 @@ from .text_processor import TextProcessor
 from .table_processor import TableProcessor
 from .image_processor import ImageProcessor
 from .validators import GuardrailsValidator, get_validator
-from llama_index.core.tools import QueryEngineTool, ToolMetadata
-from llama_index.agent.openai import OpenAIAgent
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +30,6 @@ class MultimodalService:
         self.embed_model = None
         self._initialized = False
         self._index_loaded = False  # Track if we've attempted to load existing index
-        self._document_store: Dict[str, Dict[str, Any]] = {}
-        self._cached_documents: Optional[List[Document]] = None
         self.validator: Optional[GuardrailsValidator] = None
         self._bm25_enabled = False
         self._sql_enabled = False
